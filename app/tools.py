@@ -15,7 +15,28 @@ TOOLS = [
                 "required": ["file_path"],
             },
         },
-    }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "Write",
+            "description": "Write content to a file",
+            "parameters": {
+                "type": "object",
+                "required": ["file_path", "content"],
+                "properties": {
+                    "file_path": {
+                        "type": "string",
+                        "description": "The path of the file to write to",
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "The content to write to the file",
+                    },
+                },
+            },
+        },
+    },
 ]
 
 
@@ -24,8 +45,15 @@ def _read(file_path):
         return f.read()
 
 
+def _write(file_path, content):
+    with open(file_path, "w") as f:
+        f.write(content)
+    return f"Written to {file_path}"
+
+
 TOOL_HANDLERS = {
     "Read": lambda args: _read(args["file_path"]),
+    "Write": lambda args: _write(args["file_path"], args["content"]),
 }
 
 
