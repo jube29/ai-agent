@@ -1,3 +1,5 @@
+import subprocess
+
 TOOLS = [
     {
         "type": "function",
@@ -37,6 +39,23 @@ TOOLS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "Bash",
+            "description": "Execute a shell command",
+            "parameters": {
+                "type": "object",
+                "required": ["command"],
+                "properties": {
+                    "command": {
+                        "type": "string",
+                        "description": "The command to execute",
+                    }
+                },
+            },
+        },
+    },
 ]
 
 
@@ -51,9 +70,18 @@ def _write(file_path, content):
     return f"Written to {file_path}"
 
 
+def _bash(command):
+    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+    output = result.stdout
+    if result.stderr:
+        output += result.stderr
+    return output
+
+
 TOOL_HANDLERS = {
     "Read": lambda args: _read(args["file_path"]),
     "Write": lambda args: _write(args["file_path"], args["content"]),
+    "Bash": lambda args: _bash(args["command"]),
 }
 
 
