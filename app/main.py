@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import sys
 
@@ -46,8 +47,19 @@ def main():
         raise RuntimeError("no choices in response")
 
     print("Logs from your program will appear here!", file=sys.stderr)
+    msg = chat.choices[0].message
+    tool_calls = msg.tool_calls
 
-    print(chat.choices[0].message.content)
+    if not tool_calls:
+        print(msg.content)
+    else:
+        function_name = tool_calls[0].function.name
+        function_args = json.loads(tool_calls[0].function.arguments)
+
+        if function_name == "Read":
+            file_path = function_args["file_path"]
+            with open(file_path, "r") as f:
+                print(f.read())
 
 
 if __name__ == "__main__":
